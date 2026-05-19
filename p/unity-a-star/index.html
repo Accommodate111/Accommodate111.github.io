@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Unity A* 寻路算法 1. 节点 1 2 3 4 5 6 7 8 9 10 11 12 // 是否可以行走 public bool isWalkable; // 节点的位置（网格坐标） public Vector2Int gridPos; // 起点 -&gt; 当前节点（准确值） public float gCost; // 当前节点 -&gt; 终点（预测值） public float hCost; // 总代价 public float FCost =&gt; gCost + hCost; // 上一个节点（用于回溯路径） public Node parent; 字段 含义 gCost 从起点到当前节点的实际代价 hCost 从当前节点到终点的启发式估计代价 FCost gCost + hCost，A* 排序依据 parent 最短路径上的前驱节点 2. 网格管理 2.1 生成网格地图 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 public void CreateMap() { Map = new Node[mapX, mapY]; for (int x = 0; x &lt; mapX; x++) { for (int y = 0; y &lt; mapY; y++) { // 确定地图原点（第一象限） Vector2Int pos = new Vector2Int(mapOrigin.x + x, mapOrigin.y + y); GameObject obj = Instantiate(nodePrefab, new Vector3(pos.x, pos.y, 0), Quaternion.identity, mapRoot); Node node = obj.GetComponent&lt;Node&gt;(); node.gridPos = new Vector2Int(x, y); // 世界坐标 -&gt; 网格虚拟坐标 node.isWalkable = true; Map[x, y] = node; } } } ">
+<title>Unity A* 寻路算法</title>
+
+<link rel='canonical' href='https://Accommodate111.github.io/p/unity-a-star/'>
+
+<link rel="stylesheet" href="/scss/style.min.833d6eed45de56f48306bf57268d5b8cdfc8a60e8e7bdc99810464fcd033f7c6.css"><meta property='og:title' content="Unity A* 寻路算法">
+<meta property='og:description' content="Unity A* 寻路算法 1. 节点 1 2 3 4 5 6 7 8 9 10 11 12 // 是否可以行走 public bool isWalkable; // 节点的位置（网格坐标） public Vector2Int gridPos; // 起点 -&gt; 当前节点（准确值） public float gCost; // 当前节点 -&gt; 终点（预测值） public float hCost; // 总代价 public float FCost =&gt; gCost + hCost; // 上一个节点（用于回溯路径） public Node parent; 字段 含义 gCost 从起点到当前节点的实际代价 hCost 从当前节点到终点的启发式估计代价 FCost gCost + hCost，A* 排序依据 parent 最短路径上的前驱节点 2. 网格管理 2.1 生成网格地图 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 public void CreateMap() { Map = new Node[mapX, mapY]; for (int x = 0; x &lt; mapX; x++) { for (int y = 0; y &lt; mapY; y++) { // 确定地图原点（第一象限） Vector2Int pos = new Vector2Int(mapOrigin.x + x, mapOrigin.y + y); GameObject obj = Instantiate(nodePrefab, new Vector3(pos.x, pos.y, 0), Quaternion.identity, mapRoot); Node node = obj.GetComponent&lt;Node&gt;(); node.gridPos = new Vector2Int(x, y); // 世界坐标 -&gt; 网格虚拟坐标 node.isWalkable = true; Map[x, y] = node; } } } ">
+<meta property='og:url' content='https://Accommodate111.github.io/p/unity-a-star/'>
+<meta property='og:site_name' content='元某人也'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='A*' /><meta property='article:tag' content='寻路' /><meta property='article:tag' content='Unity' /><meta property='article:published_time' content='2026-05-19T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-19T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Unity A* 寻路算法">
+<meta name="twitter:description" content="Unity A* 寻路算法 1. 节点 1 2 3 4 5 6 7 8 9 10 11 12 // 是否可以行走 public bool isWalkable; // 节点的位置（网格坐标） public Vector2Int gridPos; // 起点 -&gt; 当前节点（准确值） public float gCost; // 当前节点 -&gt; 终点（预测值） public float hCost; // 总代价 public float FCost =&gt; gCost + hCost; // 上一个节点（用于回溯路径） public Node parent; 字段 含义 gCost 从起点到当前节点的实际代价 hCost 从当前节点到终点的启发式估计代价 FCost gCost + hCost，A* 排序依据 parent 最短路径上的前驱节点 2. 网格管理 2.1 生成网格地图 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 public void CreateMap() { Map = new Node[mapX, mapY]; for (int x = 0; x &lt; mapX; x++) { for (int y = 0; y &lt; mapY; y++) { // 确定地图原点（第一象限） Vector2Int pos = new Vector2Int(mapOrigin.x + x, mapOrigin.y + y); GameObject obj = Instantiate(nodePrefab, new Vector3(pos.x, pos.y, 0), Quaternion.identity, mapRoot); Node node = obj.GetComponent&lt;Node&gt;(); node.gridPos = new Vector2Int(x, y); // 世界坐标 -&gt; 网格虚拟坐标 node.isWalkable = true; Map[x, y] = node; } } } ">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_3350eeeabe0e573c.png" width="300"
+                            height="296" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😋</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">元某人也</a></h1>
+            <h2 class="site-description">宁跛行于正道，勿驰骋于歧途。</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Accommodate111'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://Accommodate111.github.io/" selected>简体中文</option>
+                                
+                                    <option value="https://Accommodate111.github.io/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#1-节点">1. 节点</a></li>
+    <li><a href="#2-网格管理">2. 网格管理</a>
+      <ol>
+        <li><a href="#21-生成网格地图">2.1 生成网格地图</a></li>
+        <li><a href="#22-获取节点周围邻居八方向">2.2 获取节点周围邻居（八方向）</a></li>
+      </ol>
+    </li>
+    <li><a href="#3-算法核心">3. 算法核心</a>
+      <ol>
+        <li><a href="#31-初始化-open--close-列表">3.1 初始化 open / close 列表</a></li>
+        <li><a href="#32-主循环openlist-非空时">3.2 主循环（openList 非空时）</a>
+          <ol>
+            <li><a href="#-选出-fcost-最小的节点">① 选出 FCost 最小的节点</a></li>
+            <li><a href="#-移入-closelist">② 移入 closeList</a></li>
+            <li><a href="#-到达终点回溯路径">③ 到达终点：回溯路径</a></li>
+            <li><a href="#-扩展邻居节点">④ 扩展邻居节点</a></li>
+          </ol>
+        </li>
+        <li><a href="#33-启发函数-getdistance">3.3 启发函数 <code>GetDistance</code></a>
+          <ol>
+            <li><a href="#四方向曼哈顿距离">四方向：曼哈顿距离</a></li>
+            <li><a href="#八方向切比雪夫式代价直走-10斜走-14">八方向：切比雪夫式代价（直走 10，斜走 14）</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#4-多单位-a-的优化">4. 多单位 A* 的优化</a></li>
+    <li><a href="#流程速查">流程速查</a></li>
+    <li><a href="#要点速查">要点速查</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/unity/" >
+                Unity
+            </a>
+        
+            <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/" >
+                游戏开发
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/unity-a-star/">Unity A* 寻路算法</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2026-05-19T00:00:00Z'>2026-05-19</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="unity-a-寻路算法">Unity A* 寻路算法
+</h1><h2 id="1-节点">1. 节点
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="c1">// 是否可以行走</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">bool</span> <span class="n">isWalkable</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 节点的位置（网格坐标）</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Vector2Int</span> <span class="n">gridPos</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 起点 -&gt; 当前节点（准确值）</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">float</span> <span class="n">gCost</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 当前节点 -&gt; 终点（预测值）</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">float</span> <span class="n">hCost</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 总代价</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">float</span> <span class="n">FCost</span> <span class="p">=&gt;</span> <span class="n">gCost</span> <span class="p">+</span> <span class="n">hCost</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 上一个节点（用于回溯路径）</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Node</span> <span class="n">parent</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>字段</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>gCost</code></td>
+          <td>从起点到当前节点的<strong>实际</strong>代价</td>
+      </tr>
+      <tr>
+          <td><code>hCost</code></td>
+          <td>从当前节点到终点的<strong>启发式估计</strong>代价</td>
+      </tr>
+      <tr>
+          <td><code>FCost</code></td>
+          <td><code>gCost + hCost</code>，A* 排序依据</td>
+      </tr>
+      <tr>
+          <td><code>parent</code></td>
+          <td>最短路径上的前驱节点</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="2-网格管理">2. 网格管理
+</h2><h3 id="21-生成网格地图">2.1 生成网格地图
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">void</span> <span class="n">CreateMap</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Map</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Node</span><span class="p">[</span><span class="n">mapX</span><span class="p">,</span> <span class="n">mapY</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">x</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">x</span> <span class="p">&lt;</span> <span class="n">mapX</span><span class="p">;</span> <span class="n">x</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">y</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">y</span> <span class="p">&lt;</span> <span class="n">mapY</span><span class="p">;</span> <span class="n">y</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 确定地图原点（第一象限）</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Vector2Int</span> <span class="n">pos</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector2Int</span><span class="p">(</span><span class="n">mapOrigin</span><span class="p">.</span><span class="n">x</span> <span class="p">+</span> <span class="n">x</span><span class="p">,</span> <span class="n">mapOrigin</span><span class="p">.</span><span class="n">y</span> <span class="p">+</span> <span class="n">y</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">GameObject</span> <span class="n">obj</span> <span class="p">=</span> <span class="n">Instantiate</span><span class="p">(</span><span class="n">nodePrefab</span><span class="p">,</span> <span class="k">new</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="m">0</span><span class="p">),</span> <span class="n">Quaternion</span><span class="p">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">mapRoot</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">Node</span> <span class="n">node</span> <span class="p">=</span> <span class="n">obj</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">node</span><span class="p">.</span><span class="n">gridPos</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vector2Int</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span> <span class="c1">// 世界坐标 -&gt; 网格虚拟坐标</span>
+</span></span><span class="line"><span class="cl">            <span class="n">node</span><span class="p">.</span><span class="n">isWalkable</span> <span class="p">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">Map</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="p">=</span> <span class="n">node</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="https://i-blog.csdnimg.cn/direct/6d9008f66ba14b8c8d4661b2281fa69b.jpeg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="网格坐标示意"
+	
+	
+></p>
+<blockquote>
+<p><strong>注</strong>：图中<strong>黑色</strong>为真实世界坐标，<strong>红色</strong>为虚拟网格坐标（参与路径计算）。</p>
+</blockquote>
+<h3 id="22-获取节点周围邻居八方向">2.2 获取节点周围邻居（八方向）
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;</span> <span class="n">GetNeighbors</span><span class="p">(</span><span class="n">Node</span> <span class="n">node</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">List</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;</span> <span class="n">neighbors</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">x</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="n">x</span> <span class="p">&lt;=</span> <span class="m">1</span><span class="p">;</span> <span class="n">x</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">y</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="n">y</span> <span class="p">&lt;=</span> <span class="m">1</span><span class="p">;</span> <span class="n">y</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="p">==</span> <span class="m">0</span> <span class="p">&amp;&amp;</span> <span class="n">y</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span><span class="p">;</span> <span class="c1">// 跳过中心节点</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="kt">int</span> <span class="n">nodeX</span> <span class="p">=</span> <span class="n">node</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">x</span> <span class="p">+</span> <span class="n">x</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">int</span> <span class="n">nodeY</span> <span class="p">=</span> <span class="n">node</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">y</span> <span class="p">+</span> <span class="n">y</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">nodeX</span> <span class="p">&gt;=</span> <span class="m">0</span> <span class="p">&amp;&amp;</span> <span class="n">nodeX</span> <span class="p">&lt;</span> <span class="n">mapX</span> <span class="p">&amp;&amp;</span> <span class="n">nodeY</span> <span class="p">&gt;=</span> <span class="m">0</span> <span class="p">&amp;&amp;</span> <span class="n">nodeY</span> <span class="p">&lt;</span> <span class="n">mapY</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">neighbors</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">Map</span><span class="p">[</span><span class="n">nodeX</span><span class="p">,</span> <span class="n">nodeY</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">neighbors</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="3-算法核心">3. 算法核心
+</h2><h3 id="31-初始化-open--close-列表">3.1 初始化 open / close 列表
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="n">List</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;</span> <span class="n">openList</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;();</span>       <span class="c1">// 待探索</span>
+</span></span><span class="line"><span class="cl"><span class="n">HashSet</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;</span> <span class="n">closeList</span> <span class="p">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;();</span> <span class="c1">// 已探索</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">openList</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">startNode</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="32-主循环openlist-非空时">3.2 主循环（openList 非空时）
+</h3><h4 id="-选出-fcost-最小的节点">① 选出 FCost 最小的节点
+</h4><p>若 <code>FCost</code> 相同，则比较 <code>hCost</code>（<code>gCost</code> 为确定值，此处不参与 tie-break）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="n">Node</span> <span class="n">currentNode</span> <span class="p">=</span> <span class="n">openList</span><span class="p">[</span><span class="m">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">openList</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">openList</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">FCost</span> <span class="p">&lt;</span> <span class="n">currentNode</span><span class="p">.</span><span class="n">FCost</span> <span class="p">||</span>
+</span></span><span class="line"><span class="cl">        <span class="n">openList</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">FCost</span> <span class="p">==</span> <span class="n">currentNode</span><span class="p">.</span><span class="n">FCost</span> <span class="p">&amp;&amp;</span> <span class="n">openList</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">hCost</span> <span class="p">&lt;</span> <span class="n">currentNode</span><span class="p">.</span><span class="n">hCost</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">currentNode</span> <span class="p">=</span> <span class="n">openList</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="-移入-closelist">② 移入 closeList
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="n">openList</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">currentNode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">closeList</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">currentNode</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="-到达终点回溯路径">③ 到达终点：回溯路径
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">currentNode</span> <span class="p">==</span> <span class="n">targetNode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">RetracePath</span><span class="p">(</span><span class="n">startNode</span><span class="p">,</span> <span class="n">targetNode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="k">void</span> <span class="n">RetracePath</span><span class="p">(</span><span class="n">Node</span> <span class="n">startNode</span><span class="p">,</span> <span class="n">Node</span> <span class="n">endNode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">List</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;</span> <span class="n">path</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Node</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Node</span> <span class="n">currentNode</span> <span class="p">=</span> <span class="n">endNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">currentNode</span> <span class="p">!=</span> <span class="n">startNode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">currentNode</span><span class="p">.</span><span class="n">spriteRenderer</span><span class="p">.</span><span class="n">color</span> <span class="p">=</span> <span class="n">Color</span><span class="p">.</span><span class="n">green</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">path</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">currentNode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">currentNode</span> <span class="p">=</span> <span class="n">currentNode</span><span class="p">.</span><span class="n">parent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">path</span><span class="p">.</span><span class="n">Reverse</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><strong>注</strong>：通过 <code>parent</code> 从终点一路回溯到起点。</p>
+</blockquote>
+<h4 id="-扩展邻居节点">④ 扩展邻居节点
+</h4><p>对当前节点的邻居：</p>
+<ul>
+<li>不可行走或已在 <code>closeList</code> → <strong>跳过</strong></li>
+<li>计算 <code>newGCost</code>；若比原 <code>gCost</code> 更优，或该节点还不在 <code>openList</code>，则更新 <code>g/h</code>、设置 <code>parent</code>，并加入 <code>openList</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">node</span> <span class="k">in</span> <span class="n">gridManager</span><span class="p">.</span><span class="n">GetNeighbors</span><span class="p">(</span><span class="n">currentNode</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(!</span><span class="n">node</span><span class="p">.</span><span class="n">isWalkable</span> <span class="p">||</span> <span class="n">closeList</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">float</span> <span class="n">newGCost</span> <span class="p">=</span> <span class="n">currentNode</span><span class="p">.</span><span class="n">gCost</span> <span class="p">+</span> <span class="n">GetDistance</span><span class="p">(</span><span class="n">currentNode</span><span class="p">,</span> <span class="n">node</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">newGCost</span> <span class="p">&lt;</span> <span class="n">node</span><span class="p">.</span><span class="n">gCost</span> <span class="p">||</span> <span class="p">!</span><span class="n">openList</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">node</span><span class="p">.</span><span class="n">gCost</span> <span class="p">=</span> <span class="n">newGCost</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">node</span><span class="p">.</span><span class="n">hCost</span> <span class="p">=</span> <span class="n">GetDistance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">targetNode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">node</span><span class="p">.</span><span class="n">parent</span> <span class="p">=</span> <span class="n">currentNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(!</span><span class="n">openList</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">openList</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><strong>说明</strong></p>
+<ul>
+<li>邻居节点初始 <code>gCost</code> 为 0，第一次访问时 <code>newGCost &gt; node.gCost</code> 仍成立，且不在任何队列 → <strong>一定会进入 openList</strong>。</li>
+<li>赋值后若发现更短路径会更新；<strong>往回走</strong>时 <code>newGCost</code> 更大，不会错误覆盖。</li>
+</ul>
+</blockquote>
+<h3 id="33-启发函数-getdistance">3.3 启发函数 <code>GetDistance</code>
+</h3><h4 id="四方向曼哈顿距离">四方向：曼哈顿距离
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">xDis</span> <span class="p">=</span> <span class="n">Mathf</span><span class="p">.</span><span class="n">Abs</span><span class="p">(</span><span class="n">node1</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">x</span> <span class="p">-</span> <span class="n">node2</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">yDis</span> <span class="p">=</span> <span class="n">Mathf</span><span class="p">.</span><span class="n">Abs</span><span class="p">(</span><span class="n">node1</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">y</span> <span class="p">-</span> <span class="n">node2</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">xDis</span> <span class="p">+</span> <span class="n">yDis</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="八方向切比雪夫式代价直走-10斜走-14">八方向：切比雪夫式代价（直走 10，斜走 14）
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">xDis</span> <span class="p">=</span> <span class="n">Mathf</span><span class="p">.</span><span class="n">Abs</span><span class="p">(</span><span class="n">node1</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">x</span> <span class="p">-</span> <span class="n">node2</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">yDis</span> <span class="p">=</span> <span class="n">Mathf</span><span class="p">.</span><span class="n">Abs</span><span class="p">(</span><span class="n">node1</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">y</span> <span class="p">-</span> <span class="n">node2</span><span class="p">.</span><span class="n">gridPos</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="kt">int</span> <span class="n">straightCost</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="kt">int</span> <span class="n">diagonalCost</span> <span class="p">=</span> <span class="m">14</span><span class="p">;</span> <span class="c1">// √2 ≈ 1.414，取整</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 先斜向走 min(dx,dy) 步，再直走 |dx-dy| 步</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">diagonalCost</span> <span class="p">*</span> <span class="n">Mathf</span><span class="p">.</span><span class="n">Min</span><span class="p">(</span><span class="n">xDis</span><span class="p">,</span> <span class="n">yDis</span><span class="p">)</span> <span class="p">+</span> <span class="n">straightCost</span> <span class="p">*</span> <span class="n">Mathf</span><span class="p">.</span><span class="n">Abs</span><span class="p">(</span><span class="n">xDis</span> <span class="p">-</span> <span class="n">yDis</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="https://i-blog.csdnimg.cn/direct/db37e37698b54d34bb89562bc6d490a5.jpeg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="寻路结果示意"
+	
+	
+></p>
+<hr>
+<h2 id="4-多单位-a-的优化">4. 多单位 A* 的优化
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>优化</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>优先队列 + HashSet</strong></td>
+          <td><code>openList</code> 用 <strong>Priority Queue</strong>（根为最小 F，O(log n) 取最优点）；<code>closeList</code> 用 <strong>HashSet</strong>（O(1) 查找是否已探索）</td>
+      </tr>
+      <tr>
+          <td><strong>相同起点</strong></td>
+          <td>直接<strong>复用缓存路径</strong></td>
+      </tr>
+      <tr>
+          <td><strong>起点不同、终点相同</strong></td>
+          <td>用 <strong>Dijkstra</strong> 从终点<strong>反向扩散</strong>，预计算每个格子的行进方向，多单位共享</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote>
+<p><strong>优先队列</strong>：逻辑上是完全二叉树，实现上常用数组 + 下标公式；根节点始终为当前最小代价节点。</p>
+</blockquote>
+<hr>
+<h2 id="流程速查">流程速查
+</h2><pre class="mermaid">
+  flowchart TD
+    A[openList 加入起点] --&gt; B{openList 为空?}
+    B --&gt;|是| Z[无解]
+    B --&gt;|否| C[取 FCost 最小节点为 current]
+    C --&gt; D[current 移入 closeList]
+    D --&gt; E{current == 终点?}
+    E --&gt;|是| F[沿 parent 回溯路径]
+    E --&gt;|否| G[遍历邻居]
+    G --&gt; H{可行走且不在 close?}
+    H --&gt;|否| G
+    H --&gt;|是| I[更新 gCost/hCost/parent]
+    I --&gt; J[加入 openList]
+    J --&gt; B
+</pre>
+
+<hr>
+<h2 id="要点速查">要点速查
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>概念</th>
+          <th>要点</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>A*</td>
+          <td><code>F = g + h</code>，按 F 升序扩展，h 需可采纳（不高估）</td>
+      </tr>
+      <tr>
+          <td>open / close</td>
+          <td>待探索 / 已探索，避免重复扩展</td>
+      </tr>
+      <tr>
+          <td>parent</td>
+          <td>记录最短路上的前驱，终点回溯得路径</td>
+      </tr>
+      <tr>
+          <td>四向 / 八向</td>
+          <td>曼哈顿 / 直10斜14 代价</td>
+      </tr>
+      <tr>
+          <td>多单位</td>
+          <td>优先队列提速；同终点可反向 Dijkstra 预处理</td>
+      </tr>
+  </tbody>
+</table></div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/a/">A*</a>
+        
+            <a href="/tags/%E5%AF%BB%E8%B7%AF/">寻路</a>
+        
+            <a href="/tags/unity/">Unity</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>仅用于交流学习，记录学习心得</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/mirror/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mirror 联网笔记</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/network-for-gameobjects/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Netcode for GameObjects 笔记</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/unity-dots/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Unity DOTS</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/unity-gui-optimization/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Unity GUI 优化</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/unity-framework/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Unity 程序基础小框架</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 元某人也
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

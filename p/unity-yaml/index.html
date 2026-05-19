@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Unity YAML 转载自 CSDN 博客，仅供个人学习笔记。\n作者：海海不瞌睡（捏捏王子） / stariser\n首次发布：2026-03-31 11:13:42\n最后修改：2026-03-31 21:42:24\n原文链接：https://blog.csdn.net/stariser/article/details/159655003\n许可：遵循 CC 4.0 BY-SA，转载请附上原文出处链接和本声明。\n系列：同作者笔记 → Unity GUI 优化 · Unity A* 寻路 · C# 知识点概要 · Unity DOTS\n">
+<title>Unity YAML</title>
+
+<link rel='canonical' href='https://Accommodate111.github.io/p/unity-yaml/'>
+
+<link rel="stylesheet" href="/scss/style.min.833d6eed45de56f48306bf57268d5b8cdfc8a60e8e7bdc99810464fcd033f7c6.css"><meta property='og:title' content="Unity YAML">
+<meta property='og:description' content="Unity YAML 转载自 CSDN 博客，仅供个人学习笔记。\n作者：海海不瞌睡（捏捏王子） / stariser\n首次发布：2026-03-31 11:13:42\n最后修改：2026-03-31 21:42:24\n原文链接：https://blog.csdn.net/stariser/article/details/159655003\n许可：遵循 CC 4.0 BY-SA，转载请附上原文出处链接和本声明。\n系列：同作者笔记 → Unity GUI 优化 · Unity A* 寻路 · C# 知识点概要 · Unity DOTS\n">
+<meta property='og:url' content='https://Accommodate111.github.io/p/unity-yaml/'>
+<meta property='og:site_name' content='元某人也'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='YAML' /><meta property='article:tag' content='Unity' /><meta property='article:published_time' content='2026-05-19T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-19T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Unity YAML">
+<meta name="twitter:description" content="Unity YAML 转载自 CSDN 博客，仅供个人学习笔记。\n作者：海海不瞌睡（捏捏王子） / stariser\n首次发布：2026-03-31 11:13:42\n最后修改：2026-03-31 21:42:24\n原文链接：https://blog.csdn.net/stariser/article/details/159655003\n许可：遵循 CC 4.0 BY-SA，转载请附上原文出处链接和本声明。\n系列：同作者笔记 → Unity GUI 优化 · Unity A* 寻路 · C# 知识点概要 · Unity DOTS\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_3350eeeabe0e573c.png" width="300"
+                            height="296" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😋</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">元某人也</a></h1>
+            <h2 class="site-description">宁跛行于正道，勿驰骋于歧途。</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Accommodate111'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://Accommodate111.github.io/" selected>简体中文</option>
+                                
+                                    <option value="https://Accommodate111.github.io/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#1-yaml-文件结构">1. YAML 文件结构</a>
+      <ol>
+        <li><a href="#11-文件头">1.1 文件头</a></li>
+        <li><a href="#12-对象定义块">1.2 对象定义块</a>
+          <ol>
+            <li><a href="#1标头格式">（1）标头格式</a></li>
+            <li><a href="#2标头下方">（2）标头下方</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#2-同一-yaml-文件内引用">2. 同一 YAML 文件内引用</a></li>
+    <li><a href="#3-跨-yaml-文件引用">3. 跨 YAML 文件引用</a>
+      <ol>
+        <li><a href="#31-guid">3.1 GUID</a></li>
+        <li><a href="#32-meta-文件">3.2 <code>.meta</code> 文件</a></li>
+        <li><a href="#33-yaml-中的-type-字段">3.3 YAML 中的 <code>type</code> 字段</a></li>
+        <li><a href="#34-脚本序列化">3.4 脚本序列化</a></li>
+      </ol>
+    </li>
+    <li><a href="#4-yaml-文件与-meta-文件">4. YAML 文件与 <code>.meta</code> 文件</a>
+      <ol>
+        <li><a href="#41-yaml-文件资产本体">4.1 YAML 文件（资产本体）</a></li>
+        <li><a href="#42-meta-文件元数据">4.2 <code>.meta</code> 文件（元数据）</a></li>
+      </ol>
+    </li>
+    <li><a href="#关系速查">关系速查</a></li>
+    <li><a href="#要点速查">要点速查</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/unity/" >
+                Unity
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/unity-yaml/">Unity YAML</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2026-05-19T00:00:00Z'>2026-05-19</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="unity-yaml">Unity YAML
+</h1><blockquote>
+<p>转载自 CSDN 博客，仅供个人学习笔记。<br>
+<strong>作者</strong>：海海不瞌睡（捏捏王子） / <a class="link" href="https://blog.csdn.net/stariser"  target="_blank" rel="noopener"
+    >stariser</a><br>
+<strong>首次发布</strong>：2026-03-31 11:13:42<br>
+<strong>最后修改</strong>：2026-03-31 21:42:24<br>
+<strong>原文链接</strong>：https://blog.csdn.net/stariser/article/details/159655003<br>
+<strong>许可</strong>：遵循 <a class="link" href="http://creativecommons.org/licenses/by-sa/4.0/"  target="_blank" rel="noopener"
+    >CC 4.0 BY-SA</a>，转载请附上原文出处链接和本声明。<br>
+<strong>系列</strong>：同作者笔记 → <a class="link" href="/p/unity-gui-optimization/" >Unity GUI 优化</a> · <a class="link" href="/p/unity-a-star/" >Unity A* 寻路</a> · <a class="link" href="/p/csharp-overview/" >C# 知识点概要</a> · <a class="link" href="/p/unity-dots/" >Unity DOTS</a></p>
+</blockquote>
+<hr>
+<h2 id="1-yaml-文件结构">1. YAML 文件结构
+</h2><p><img src="https://i-blog.csdnimg.cn/direct/129da38f81204a77890ac5f6bc23fbf9.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="YAML 文件整体结构"
+	
+	
+></p>
+<h3 id="11-文件头">1.1 文件头
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>行</th>
+          <th>内容</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>第一行</td>
+          <td>YAML 版本号</td>
+      </tr>
+      <tr>
+          <td>第二行</td>
+          <td>定义 <code>!u!</code> 的宏（Unity 专用标签前缀）</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>典型文件头示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="l">%YAML 1.1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">%TAG !u! tag:unity3d.com,2011</span><span class="p">:</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="12-对象定义块">1.2 对象定义块
+</h3><h4 id="1标头格式">（1）标头格式
+</h4><p><img src="https://i-blog.csdnimg.cn/direct/cf8ae99a6b7d4778b8dc2b8dc09f3193.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="对象标头格式"
+	
+	
+></p>
+<p>格式示意：<code>--- !u!&lt;ClassID&gt; &amp;&lt;FILE ID&gt;</code></p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>字段</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Class ID</strong></td>
+          <td>Unity 内部类的唯一编号（如 <code>1</code> 对应 <code>GameObject</code>），表示对象类型</td>
+      </tr>
+      <tr>
+          <td><strong>FILE ID</strong></td>
+          <td>该对象在<strong>当前 YAML 文件内</strong>的唯一 ID，用于文件内对象互相引用</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote>
+<p>Class ID 完整列表见官方：<a class="link" href="https://docs.unity3d.com/Manual/ClassIDReference.html"  target="_blank" rel="noopener"
+    >Class ID Reference</a></p>
+</blockquote>
+<p>示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nn">---</span><span class="w"> </span>!<span class="l">u!1 &amp;8410423576689524921</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="2标头下方">（2）标头下方
+</h4><p><strong>对象类型名称 + 全量序列化属性</strong>（字段名以 <code>m_</code> 开头居多）。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/ba539039311c43b69b81855cc23de624.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="GameObject 序列化示例"
+	
+	
+></p>
+<hr>
+<h2 id="2-同一-yaml-文件内引用">2. 同一 YAML 文件内引用
+</h2><p>通过 <code>{fileID: &lt;FILE ID&gt;}</code> 格式实现。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/d6463b211cba467c8afef6af1c01761b.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="同文件引用示例 1"
+	
+	
+>
+<img src="https://i-blog.csdnimg.cn/direct/ec442480bc6e44a3819f6747082baf71.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="同文件引用示例 2"
+	
+	
+></p>
+<p>示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">m_GameObject</span><span class="p">:</span><span class="w"> </span>{<span class="nt">fileID</span><span class="p">:</span><span class="w"> </span><span class="m">8410423576689524921</span>}<span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><strong>注</strong>：在同一 YAML 文件中，<code>Transform</code> 组件通过 <code>m_GameObject</code> 引用所属 <code>GameObject</code> 的 <strong>File ID</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="3-跨-yaml-文件引用">3. 跨 YAML 文件引用
+</h2><h3 id="31-guid">3.1 GUID
+</h3><p>整个<strong>资产文件</strong>的全局唯一 ID，保存在与资产<strong>同路径、同名</strong>的 <code>.meta</code> 文件中。</p>
+<h3 id="32-meta-文件">3.2 <code>.meta</code> 文件
+</h3><p>存储 <strong>GUID</strong>、资产导入设置、Asset Bundle 配置等核心元数据。</p>
+<h3 id="33-yaml-中的-type-字段">3.3 YAML 中的 <code>type</code> 字段
+</h3><p><img src="https://i-blog.csdnimg.cn/direct/9b413ca92bb241609208ec260c25a6ad.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="type 字段示例"
+	
+	
+></p>
+<p>跨文件引用常见写法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">m_Script</span><span class="p">:</span><span class="w"> </span>{<span class="nt">fileID: 11500000, guid: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, type</span><span class="p">:</span><span class="w"> </span><span class="m">3</span>}<span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><code>type</code> 值</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>2</strong></td>
+          <td>从 <strong>Assets</strong> 文件夹加载资源</td>
+      </tr>
+      <tr>
+          <td><strong>3</strong></td>
+          <td>资源经导入写入 <strong>Library</strong>，由编辑器从 Library 加载</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="34-脚本序列化">3.4 脚本序列化
+</h3><p>所有<strong>自定义脚本</strong>在 YAML 中均序列化为 <strong><code>MonoBehaviour</code></strong> 类型；通过 <code>m_Script</code> <strong>引用脚本对应 <code>.meta</code> 的 GUID</strong> 关联到具体 C# 文件。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">MonoBehaviour</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">m_Script</span><span class="p">:</span><span class="w"> </span>{<span class="nt">fileID: 11500000, guid: abcd1234..., type</span><span class="p">:</span><span class="w"> </span><span class="m">3</span>}<span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>C# 源文件本身不是 YAML；脚本的 <code>.meta</code> GUID 是 <code>MonoBehaviour</code> 与代码文件之间的<strong>唯一桥梁</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="4-yaml-文件与-meta-文件">4. YAML 文件与 <code>.meta</code> 文件
+</h2><h3 id="41-yaml-文件资产本体">4.1 YAML 文件（资产本体）
+</h3><p>底层序列化存储格式，是资产的<strong>实际内容</strong>。</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>资产类型</th>
+          <th>扩展名</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>预制体</td>
+          <td><code>.prefab</code></td>
+      </tr>
+      <tr>
+          <td>场景</td>
+          <td><code>.unity</code></td>
+      </tr>
+      <tr>
+          <td>材质</td>
+          <td><code>.mat</code></td>
+      </tr>
+      <tr>
+          <td>动画片段</td>
+          <td><code>.anim</code></td>
+      </tr>
+      <tr>
+          <td>ScriptableObject</td>
+          <td><code>.asset</code></td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote>
+<p><strong>注</strong>：PNG / FBX / MP3 等源文件为<strong>二进制</strong>，引擎侧配置主要在 <code>.meta</code> 中；<strong>C# 脚本不是 YAML</strong>，仅通过 <code>.meta</code> 的 GUID 与 <code>MonoBehaviour</code> 关联。</p>
+</blockquote>
+<h3 id="42-meta-文件元数据">4.2 <code>.meta</code> 文件（元数据）
+</h3><p>自动生成的元数据，与资产<strong>同目录、同名</strong>（如 <code>Player.prefab</code> → <code>Player.prefab.meta</code>），是资产的<strong>全局标识与配置</strong>。</p>
+<ul>
+<li><code>Assets</code> 下所有内容均有对应 <code>.meta</code></li>
+<li>版本管理时 <strong>必须一并提交</strong> <code>.meta</code>，否则 GUID 变化会导致引用丢失</li>
+</ul>
+<hr>
+<h2 id="关系速查">关系速查
+</h2><pre class="mermaid">
+  flowchart TB
+    subgraph 单文件内
+        GO[GameObject&lt;br/&gt;FILE ID]
+        TR[Transform&lt;br/&gt;m_GameObject: fileID]
+        GO --&gt; TR
+    end
+    subgraph 跨文件
+        A[资产 A.prefab&lt;br/&gt;YAML]
+        M[资产 A.prefab.meta&lt;br/&gt;GUID]
+        B[脚本 B.cs.meta&lt;br/&gt;GUID]
+        A --- M
+        A --&gt;|m_Script guid| B
+    end
+</pre>
+
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>概念</th>
+          <th>作用域</th>
+          <th>存放位置</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>FILE ID</strong></td>
+          <td>单个 YAML 文件内</td>
+          <td>对象标头 <code>&amp;数字</code></td>
+      </tr>
+      <tr>
+          <td><strong>GUID</strong></td>
+          <td>整个项目全局</td>
+          <td><code>.meta</code> 文件</td>
+      </tr>
+      <tr>
+          <td><strong>Class ID</strong></td>
+          <td>Unity 类型系统</td>
+          <td>对象标头 <code>!u!数字</code></td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="要点速查">要点速查
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>主题</th>
+          <th>要点</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>文件头</td>
+          <td>YAML 版本 + <code>!u!</code> 宏</td>
+      </tr>
+      <tr>
+          <td>对象块</td>
+          <td><code>Class ID</code> 表类型，<code>FILE ID</code> 表文件内引用</td>
+      </tr>
+      <tr>
+          <td>文件内引用</td>
+          <td><code>{fileID: ...}</code></td>
+      </tr>
+      <tr>
+          <td>跨文件引用</td>
+          <td><code>{fileID, guid, type}</code>，<code>type</code> 2=Assets，3=Library</td>
+      </tr>
+      <tr>
+          <td>自定义脚本</td>
+          <td>序列化为 <code>MonoBehaviour</code>，靠脚本 <code>.meta</code> 的 GUID</td>
+      </tr>
+      <tr>
+          <td><code>.meta</code></td>
+          <td>GUID + 导入设置；与资产成对存在</td>
+      </tr>
+  </tbody>
+</table></div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/yaml/">YAML</a>
+        
+            <a href="/tags/unity/">Unity</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>仅用于交流学习，记录学习心得</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/mirror/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mirror 联网笔记</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/network-for-gameobjects/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Netcode for GameObjects 笔记</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/unity-a-star/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Unity A* 寻路算法</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/unity-dots/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Unity DOTS</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/unity-gui-optimization/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Unity GUI 优化</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 元某人也
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

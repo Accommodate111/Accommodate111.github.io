@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Unity GUI 优化 1.概念 同一 Canvas 下，满足合批规则的多个 UI 元素的网格数据合并到一个顶点缓冲区，仅用一个 DrawCall 提交 GPU 渲染。\n2. 合批条件 处在同一 Canvas 下 共享同一个图集（或相同贴图）以及相同的材质实例 注：相同 Shader 的不同材质实例也不会合批。\n">
+<title>Unity GUI 优化</title>
+
+<link rel='canonical' href='https://Accommodate111.github.io/p/unity-gui-optimization/'>
+
+<link rel="stylesheet" href="/scss/style.min.833d6eed45de56f48306bf57268d5b8cdfc8a60e8e7bdc99810464fcd033f7c6.css"><meta property='og:title' content="Unity GUI 优化">
+<meta property='og:description' content="Unity GUI 优化 1.概念 同一 Canvas 下，满足合批规则的多个 UI 元素的网格数据合并到一个顶点缓冲区，仅用一个 DrawCall 提交 GPU 渲染。\n2. 合批条件 处在同一 Canvas 下 共享同一个图集（或相同贴图）以及相同的材质实例 注：相同 Shader 的不同材质实例也不会合批。\n">
+<meta property='og:url' content='https://Accommodate111.github.io/p/unity-gui-optimization/'>
+<meta property='og:site_name' content='元某人也'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='UGUI' /><meta property='article:tag' content='优化' /><meta property='article:tag' content='Unity' /><meta property='article:published_time' content='2026-05-19T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-19T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Unity GUI 优化">
+<meta name="twitter:description" content="Unity GUI 优化 1.概念 同一 Canvas 下，满足合批规则的多个 UI 元素的网格数据合并到一个顶点缓冲区，仅用一个 DrawCall 提交 GPU 渲染。\n2. 合批条件 处在同一 Canvas 下 共享同一个图集（或相同贴图）以及相同的材质实例 注：相同 Shader 的不同材质实例也不会合批。\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_3350eeeabe0e573c.png" width="300"
+                            height="296" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😋</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">元某人也</a></h1>
+            <h2 class="site-description">宁跛行于正道，勿驰骋于歧途。</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Accommodate111'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://Accommodate111.github.io/" selected>简体中文</option>
+                                
+                                    <option value="https://Accommodate111.github.io/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#1概念">1.概念</a></li>
+    <li><a href="#2-合批条件">2. 合批条件</a></li>
+    <li><a href="#3-合批流程">3. 合批流程</a></li>
+    <li><a href="#4-优化方案">4. 优化方案</a></li>
+    <li><a href="#5-重建">5. 重建</a>
+      <ol>
+        <li><a href="#概念">概念</a></li>
+      </ol>
+    </li>
+    <li><a href="#要点速查">要点速查</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/unity/" >
+                Unity
+            </a>
+        
+            <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/" >
+                游戏开发
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/unity-gui-optimization/">Unity GUI 优化</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2026-05-19T00:00:00Z'>2026-05-19</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="unity-gui-优化">Unity GUI 优化
+</h1><h2 id="1概念">1.概念
+</h2><p>同一 <strong>Canvas</strong> 下，满足合批规则的多个 UI 元素的网格数据合并到一个顶点缓冲区，仅用一个 <strong>DrawCall</strong> 提交 GPU 渲染。</p>
+<hr>
+<h2 id="2-合批条件">2. 合批条件
+</h2><ul>
+<li>处在同一 Canvas 下</li>
+<li>共享同一个图集（或相同贴图）以及<strong>相同的材质实例</strong></li>
+</ul>
+<blockquote>
+<p><strong>注</strong>：相同 Shader 的<strong>不同</strong>材质实例也不会合批。</p>
+</blockquote>
+<ul>
+<li><strong>VisibleList</strong> 中元素<strong>相邻</strong>（连续）且 <strong>Depth</strong> 相同（不被穿插）</li>
+</ul>
+<hr>
+<h2 id="3-合批流程">3. 合批流程
+</h2><ol>
+<li>按照 Hierarchy 窗口的层级做<strong>深度优先搜索</strong>，确定基础的渲染顺序（层级越靠上，越优先渲染）。</li>
+<li>计算各元素的 <strong>Depth</strong>。</li>
+</ol>
+<blockquote>
+<p><strong>Depth 计算说明</strong></p>
+<ul>
+<li>不渲染（<code>active = false</code>、<code>alpha = 0</code>、完全在裁剪区域外）→ Depth = <strong>-1</strong>，且<strong>不参与合批</strong></li>
+<li>没相交 → Depth = <strong>0</strong></li>
+<li>相交（网格重叠）时：
+<ul>
+<li>若二者<strong>相同材质实例</strong>且<strong>同一图集（相同贴图）</strong> → 两者 Depth <strong>相等</strong></li>
+<li>否则，在上方的元素 Depth 需在另一方基础上 <strong>+1</strong></li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<ol start="3">
+<li>按照 <strong>Depth → Mat ID → Texture ID → Renderer Order</strong>（Inspector 面板的顺序）从小到大排序，得到 <strong>VisibleList</strong>。</li>
+</ol>
+<blockquote>
+<p><strong>注</strong>：计算 Depth 时已在考虑材质与纹理；此处的比较是在 Depth <strong>相同</strong>的情况下进行。</p>
+</blockquote>
+<ol start="4">
+<li>依次检查 VisibleList 的<strong>相邻元素</strong>是否满足合批条件。</li>
+</ol>
+<hr>
+<h2 id="4-优化方案">4. 优化方案
+</h2><ul>
+<li><strong>动静分离</strong>（动态与静态 UI 使用不同 Canvas）
+<ul>
+<li>多个 Canvas 会<strong>打断</strong>合批，但可减少网格重建所需时间。</li>
+<li>动态元素还可能破坏 VisibleList，从而<strong>增加</strong> DrawCall。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>注</strong>：Text 与 Image 分离依然有意义——将两种纹理不同的 UI 元素各自挂到两个 Canvas。Text 与 Image <strong>穿插</strong>会导致合批中断。</p>
+</blockquote>
+<ul>
+<li>避免 UI 元素过多与层级过于复杂，影响合批速度。</li>
+<li>文本最好用 <strong>TextMeshPro</strong> 或者图片。</li>
+<li>减少 <strong>Mask</strong> 组件使用（增加 2 个 DrawCall，隔离合批空间）。</li>
+<li>使用<strong>图集</strong>。</li>
+</ul>
+<hr>
+<h2 id="5-重建">5. 重建
+</h2><h3 id="概念">概念
+</h3><p>CPU 计算网格；UI 元素的 <strong>RectTransform</strong> 尺寸与锚点变化、视觉元素的改变，都会使得<strong>同一 Canvas 下</strong>的所有元素发生<strong>网格重建</strong>。</p>
+<blockquote>
+<p><strong>注</strong>：Unity 将网格重建放在<strong>子线程</strong>上执行，以降低重建消耗；因此 Unity 官方并不强制要求使用多个 Canvas 来规避重建。</p>
+</blockquote>
+<hr>
+<h2 id="要点速查">要点速查
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>主题</th>
+          <th>要点</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>合批本质</td>
+          <td>同 Canvas + 同材质实例 + 同图集/贴图 + VisibleList 相邻且 Depth 相同</td>
+      </tr>
+      <tr>
+          <td>Depth</td>
+          <td>重叠且材质/图集不同 → Depth +1，打断合批</td>
+      </tr>
+      <tr>
+          <td>多 Canvas</td>
+          <td>打断合批，但利于动静分离、减少重建范围</td>
+      </tr>
+      <tr>
+          <td>Text / Image</td>
+          <td>分 Canvas，避免穿插</td>
+      </tr>
+      <tr>
+          <td>Mask</td>
+          <td>慎用，+2 DrawCall</td>
+      </tr>
+      <tr>
+          <td>重建</td>
+          <td>同 Canvas 内 RectTransform / 视觉变化会触发全 Canvas 重建</td>
+      </tr>
+  </tbody>
+</table></div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/ugui/">UGUI</a>
+        
+            <a href="/tags/%E4%BC%98%E5%8C%96/">优化</a>
+        
+            <a href="/tags/unity/">Unity</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>仅用于交流学习，记录学习心得</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/mirror/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mirror 联网笔记</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/network-for-gameobjects/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Netcode for GameObjects 笔记</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/unity-a-star/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Unity A* 寻路算法</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/unity-dots/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Unity DOTS</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/unity-framework/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Unity 程序基础小框架</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 元某人也
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

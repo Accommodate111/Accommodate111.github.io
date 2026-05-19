@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="C#核心 C#进阶 委托 知识点一、委托是什么 委托是函数的容器。可以理解为表达函数的变量类型，用来存储，传递函数方法，不同的函数必须对应和各自“格式一致的委托\n知识点二、基本用法 关键字：delegate 语法：访问修饰符 delegate 返回值 委托名（参数列表） 大部分写在namespace中\n">
-<title>C# 学习笔记</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="委托 知识点一、委托是什么 委托是函数的容器。可以理解为表达函数的变量类型，用来存储，传递函数方法，不同的函数必须对应和各自“格式一致的委托\n知识点二、基本用法 关键字：delegate 语法：访问修饰符 delegate 返回值 委托名（参数列表） 大部分写在namespace中\n">
+<title>C# 进阶</title>
 
-<link rel='canonical' href='https://Accommodate111.github.io/p/csharp-study-notes/'>
+<link rel='canonical' href='https://Accommodate111.github.io/p/csharp-advanced/'>
 
-<link rel="stylesheet" href="/scss/style.min.833d6eed45de56f48306bf57268d5b8cdfc8a60e8e7bdc99810464fcd033f7c6.css"><meta property='og:title' content="C# 学习笔记">
-<meta property='og:description' content="C#核心 C#进阶 委托 知识点一、委托是什么 委托是函数的容器。可以理解为表达函数的变量类型，用来存储，传递函数方法，不同的函数必须对应和各自“格式一致的委托\n知识点二、基本用法 关键字：delegate 语法：访问修饰符 delegate 返回值 委托名（参数列表） 大部分写在namespace中\n">
-<meta property='og:url' content='https://Accommodate111.github.io/p/csharp-study-notes/'>
+<link rel="stylesheet" href="/scss/style.min.833d6eed45de56f48306bf57268d5b8cdfc8a60e8e7bdc99810464fcd033f7c6.css"><meta property='og:title' content="C# 进阶">
+<meta property='og:description' content="委托 知识点一、委托是什么 委托是函数的容器。可以理解为表达函数的变量类型，用来存储，传递函数方法，不同的函数必须对应和各自“格式一致的委托\n知识点二、基本用法 关键字：delegate 语法：访问修饰符 delegate 返回值 委托名（参数列表） 大部分写在namespace中\n">
+<meta property='og:url' content='https://Accommodate111.github.io/p/csharp-advanced/'>
 <meta property='og:site_name' content='元某人也'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='C#' /><meta property='article:tag' content='学习笔记' /><meta property='article:published_time' content='2026-03-21T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-21T00:00:00&#43;00:00'/>
-<meta name="twitter:title" content="C# 学习笔记">
-<meta name="twitter:description" content="C#核心 C#进阶 委托 知识点一、委托是什么 委托是函数的容器。可以理解为表达函数的变量类型，用来存储，传递函数方法，不同的函数必须对应和各自“格式一致的委托\n知识点二、基本用法 关键字：delegate 语法：访问修饰符 delegate 返回值 委托名（参数列表） 大部分写在namespace中\n">
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='C#' /><meta property='article:tag' content='进阶' /><meta property='article:published_time' content='2026-05-19T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-19T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="C# 进阶">
+<meta name="twitter:description" content="委托 知识点一、委托是什么 委托是函数的容器。可以理解为表达函数的变量类型，用来存储，传递函数方法，不同的函数必须对应和各自“格式一致的委托\n知识点二、基本用法 关键字：delegate 语法：访问修饰符 delegate 返回值 委托名（参数列表） 大部分写在namespace中\n">
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -278,7 +278,7 @@
         <li><a href="#知识点四使用定义好的委托">知识点四、使用定义好的委托</a></li>
         <li><a href="#知识点五系统定义好的委托">知识点五、系统定义好的委托</a></li>
         <li><a href="#知识点六事件与委托的区别">知识点六、事件与委托的区别</a></li>
-        <li><a href="#知识点七匿名函数的配合使用">知识点七、匿名函数的配合使用</a></li>
+        <li><a href="#知识点七匿名函数的配合使用脱离委托和事件是不会使用匿名函数的">知识点七、匿名函数的配合使用脱离委托和事件是不会使用匿名函数的</a></li>
       </ol>
     </li>
     <li><a href="#array-list">Array List</a>
@@ -393,7 +393,7 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/csharp-study-notes/">C# 学习笔记</a>
+            <a href="/p/csharp-advanced/">C# 进阶</a>
         </h2>
     
         
@@ -415,7 +415,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published" datetime='2026-03-21T00:00:00Z'>2026-03-21</time>
+                <time class="article-time--published" datetime='2026-05-19T00:00:00Z'>2026-05-19</time>
             </div>
         
 
@@ -431,9 +431,7 @@
     <section class="article-content">
     
     
-    <h1 id="c核心">C#核心
-</h1><h1 id="c进阶">C#进阶
-</h1><h2 id="委托">委托
+    <h2 id="委托">委托
 </h2><h3 id="知识点一委托是什么">知识点一、委托是什么
 </h3><blockquote>
 <p>委托是函数的容器。可以理解为表达函数的变量类型，用来存储，传递函数方法，不同的函数必须对应和各自“格式一致的委托</p>
@@ -536,11 +534,69 @@
 <p>事件不能在类外部直接调用，但是通过在类中封装好调用的函数</p>
 <p>事件只能作为成员变量来存在于类中，不能作为临时变量</p>
 </blockquote>
-<h3 id="知识点七匿名函数的配合使用">知识点七、匿名函数的配合使用
+<h3 id="知识点七匿名函数的配合使用脱离委托和事件是不会使用匿名函数的">知识点七、匿名函数的配合使用脱离委托和事件是不会使用匿名函数的
 </h3><blockquote>
-<p>脱离委托和事件是不会使用匿名函数的</p>
 <p>匿名函数的基本语法：</p>
-<p>匿名函数可以作为函数的参数也可以作为返回值，同时，匿名函数也不可以直接从事件中-=，因为没有注册的具体名字，无法单独移除，只能直接清除整个事件，直接把整个事件赋值为null</p>
+<p>匿名函数可以作为函数的参数也可以作为返回值，同时，匿名函数也不可以直接从事件中-=，因为没有注册的具体名字，无法单独移除，只能直接清除整个事件，直接把整个事件赋值为null，<strong>C#：Lambda 和匿名方法功能几乎一样，Lambda 更强</strong>（支持异步、表达式树）</p>
+<p>在使用匿名函数或者lambda表达式时会产生<strong>闭包</strong></p>
+<blockquote>
+<p>闭包的含义：内层的函数可以引用包含在他外层的函数的变量，即使是外层函数的执行已经终止也不会被回收</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="c1">//测试闭包产生</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//闭包提供的变量的值并不是变量创建的时候的值，而是父函数范围内的最终值。</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//匿名函数体中如果使用了外部函数的变量，那么就会把这个变量拷贝到堆上，所以在外部函数执行完毕后还能使用</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span>  <span class="nc">Test</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="k">event</span> <span class="n">Action</span>  <span class="n">action</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="k">void</span> <span class="n">Test</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="kd">public</span> <span class="kt">int</span> <span class="n">Value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//在构造函数被执行完毕时，其中的零食变量Value的生命周期被改变了，只有当这个值被取消引用的时候才会被正常回收</span>
+</span></span><span class="line"><span class="cl">        <span class="n">action</span> <span class="p">=()=&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="k">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">=</span><span class="m">0</span><span class="p">;</span><span class="n">i</span><span class="p">&lt;</span><span class="m">10</span><span class="p">;</span><span class="n">i</span><span class="p">++)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//在这里订阅每一个i都是该循环的最终值即10，</span>
+</span></span><span class="line"><span class="cl">            <span class="n">action</span><span class="p">+=</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">               <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<p>匿名函数体中如果使用了外部函数的变量，那么就会把这个变量拷贝到堆上，所以在外部函数执行完毕后还能使用</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -568,22 +624,22 @@
 <pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="c1">//1.无参无返回</span>
 </span></span><span class="line"><span class="cl"><span class="n">Action</span> <span class="n">a</span> <span class="p">=</span> <span class="k">delegate</span> <span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&#34;匿名函数逻辑&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&#34;匿名函数逻辑&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl"><span class="c1">//可以先声明后调用</span>
 </span></span><span class="line"><span class="cl"><span class="n">a</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl"><span class="c1">//2.有参，和声明函数的方法一致</span>
 </span></span><span class="line"><span class="cl"><span class="n">Action</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">b</span> <span class="p">=</span> <span class="k">delegate</span> <span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">string</span> <span class="n">b</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl"><span class="n">b</span><span class="p">(</span><span class="m">100</span><span class="p">,</span> <span class="s">&#34;123&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">//3.有返回值，不需要在乎匿名函数的返回值，返回什么就是什么返回值</span>
 </span></span><span class="line"><span class="cl"><span class="n">Func</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">c</span> <span class="p">=</span> <span class="k">delegate</span> <span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s">&#34;123123&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"> <span class="k">return</span> <span class="s">&#34;123123&#34;</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1609,7 +1665,7 @@
         
             <a href="/tags/c%23/">C#</a>
         
-            <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+            <a href="/tags/%E8%BF%9B%E9%98%B6/">进阶</a>
         
     </section>
 
@@ -1635,6 +1691,28 @@
     
 
     
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/csharp-overview/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">C# 知识点概要</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
 
      
     
