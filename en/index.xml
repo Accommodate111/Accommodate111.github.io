@@ -2,10 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>YuanSomeone</title>
-        <link>https://Accommodate111.github.io/Accommodate111/en/</link>
+        <link>https://Accommodate111.github.io/en/</link>
         <description>Recent content on YuanSomeone</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
-        <copyright>元某人也</copyright><atom:link href="https://Accommodate111.github.io/Accommodate111/en/index.xml" rel="self" type="application/rss+xml" />
+        <copyright>元某人也</copyright><atom:link href="https://Accommodate111.github.io/en/index.xml" rel="self" type="application/rss+xml" />
     </channel>
 </rss>

@@ -2,40 +2,40 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://Accommodate111.github.io/Accommodate111/en/categories/</loc>
+    <loc>https://Accommodate111.github.io/en/categories/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://Accommodate111.github.io/Accommodate111/categories/"
+                href="https://Accommodate111.github.io/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://Accommodate111.github.io/Accommodate111/en/categories/"
+                href="https://Accommodate111.github.io/en/categories/"
                 />
   </url><url>
-    <loc>https://Accommodate111.github.io/Accommodate111/en/tags/</loc>
+    <loc>https://Accommodate111.github.io/en/tags/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://Accommodate111.github.io/Accommodate111/tags/"
+                href="https://Accommodate111.github.io/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://Accommodate111.github.io/Accommodate111/en/tags/"
+                href="https://Accommodate111.github.io/en/tags/"
                 />
   </url><url>
-    <loc>https://Accommodate111.github.io/Accommodate111/en/</loc>
+    <loc>https://Accommodate111.github.io/en/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://Accommodate111.github.io/Accommodate111/"
+                href="https://Accommodate111.github.io/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://Accommodate111.github.io/Accommodate111/en/"
+                href="https://Accommodate111.github.io/en/"
                 />
   </url>
 </urlset>
