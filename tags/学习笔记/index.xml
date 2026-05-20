@@ -207,14 +207,18 @@
 	
 &gt;&lt;/p&gt;
 &lt;h3 id=&#34;进程状态转换&#34;&gt;进程状态转换
-&lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/img/image-20251219173207367.png&#34;
-	
-	
-	
+&lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251219173207367.png&#34;
+	width=&#34;848&#34;
+	height=&#34;248&#34;
+	srcset=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251219173207367_hu_adef67b083a48729.png 480w, https://Accommodate111.github.io/p/operating-system/img/image-20251219173207367_hu_56a5aac4b3f90a2.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;进程状态转换&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;341&#34;
+		data-flex-basis=&#34;820px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;table&gt;
@@ -380,12 +384,16 @@
 &lt;h3 id=&#34;调度算法&#34;&gt;调度算法
 &lt;/h3&gt;&lt;h4 id=&#34;1-先来先服务fcfs&#34;&gt;1. 先来先服务（FCFS）
 &lt;/h4&gt;&lt;p&gt;按到达顺序，非抢占。实现简单，短作业等待长作业时&lt;strong&gt;平均周转时间&lt;/strong&gt;可能较大。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/img/image-20251220092733775.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251220092733775.png&#34;
+	width=&#34;458&#34;
+	height=&#34;852&#34;
+	srcset=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251220092733775_hu_21c2d87d6826fbb2.png 480w, https://Accommodate111.github.io/p/operating-system/img/image-20251220092733775_hu_df30b7fbf33d407d.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;53&#34;
+		data-flex-basis=&#34;129px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;h4 id=&#34;2-短作业优先sjf&#34;&gt;2. 短作业优先（SJF）
@@ -408,28 +416,36 @@
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/img/image-20251220094625797.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251220094625797.png&#34;
+	width=&#34;391&#34;
+	height=&#34;662&#34;
+	srcset=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251220094625797_hu_2aa1f0c9f71feaf2.png 480w, https://Accommodate111.github.io/p/operating-system/img/image-20251220094625797_hu_30381a5357cabeef.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;SJF 示例&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;59&#34;
+		data-flex-basis=&#34;141px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;h4 id=&#34;3-优先级调度&#34;&gt;3. 优先级调度
 &lt;/h4&gt;&lt;p&gt;按优先级高者优先；同优先级可按 FCFS。分抢占 / 非抢占。&lt;/p&gt;
 &lt;h4 id=&#34;4-高响应比优先hrrn&#34;&gt;4. 高响应比优先（HRRN）
 &lt;/h4&gt;&lt;p&gt;&lt;strong&gt;非抢占&lt;/strong&gt;，每次选择响应比最高的进程。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/img/image-20251220095918711.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251220095918711.png&#34;
+	width=&#34;776&#34;
+	height=&#34;771&#34;
+	srcset=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251220095918711_hu_ca3e12a398b9200e.png 480w, https://Accommodate111.github.io/p/operating-system/img/image-20251220095918711_hu_a0e57fdf05e7ab0e.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;HRRN 示例&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;100&#34;
+		data-flex-basis=&#34;241px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;h4 id=&#34;5-时间片轮转rr&#34;&gt;5. 时间片轮转（RR）
@@ -534,14 +550,18 @@
 	
 	
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/img/image-20251220160017119.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251220160017119.png&#34;
+	width=&#34;810&#34;
+	height=&#34;632&#34;
+	srcset=&#34;https://Accommodate111.github.io/p/operating-system/img/image-20251220160017119_hu_5965bb20607a6d3e.png 480w, https://Accommodate111.github.io/p/operating-system/img/image-20251220160017119_hu_1511aa914a983df6.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;银行家算法步骤 2&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;128&#34;
+		data-flex-basis=&#34;307px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;h4 id=&#34;死锁检测资源分配图&#34;&gt;死锁检测（资源分配图）
