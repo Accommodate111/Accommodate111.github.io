@@ -10,7 +10,7 @@
 <meta property='og:description' content="YAML 序列化结构、FILE ID / GUID / Class ID 与 .meta；同文件及跨 YAML 引用速查。">
 <meta property='og:url' content='https://Accommodate111.github.io/p/unity-yaml/'>
 <meta property='og:site_name' content='元某人也'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='YAML' /><meta property='article:tag' content='Unity' /><meta property='article:tag' content='序列化' /><meta property='article:published_time' content='2026-05-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-20T15:28:20&#43;08:00'/>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='YAML' /><meta property='article:tag' content='Unity' /><meta property='article:tag' content='序列化' /><meta property='article:published_time' content='2026-05-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-05-20T15:34:48&#43;08:00'/>
 <meta name="twitter:title" content="Unity YAML">
 <meta name="twitter:description" content="YAML 序列化结构、FILE ID / GUID / Class ID 与 .meta；同文件及跨 YAML 引用速查。">
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -427,14 +427,18 @@
     
     <h1 id="unity-yaml">Unity YAML
 </h1><h2 id="1-yaml-文件结构">1. YAML 文件结构
-</h2><p><img src="https://i-blog.csdnimg.cn/direct/129da38f81204a77890ac5f6bc23fbf9.png"
-	
-	
-	
+</h2><p><img src="/p/unity-yaml/img/csdn-129da38f81204a77890ac5f6bc23fbf9.png"
+	width="239"
+	height="43"
+	srcset="/p/unity-yaml/img/csdn-129da38f81204a77890ac5f6bc23fbf9_hu_9289304cf104a473.png 480w, /p/unity-yaml/img/csdn-129da38f81204a77890ac5f6bc23fbf9_hu_f88a60961cb4e2a0.png 1024w"
 	loading="lazy"
 	
 		alt="YAML 文件整体结构"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="555"
+		data-flex-basis="1333px"
 	
 ></p>
 <h3 id="11-文件头">1.1 文件头
@@ -469,14 +473,18 @@
 </div>
 </div><h3 id="12-对象定义块">1.2 对象定义块
 </h3><h4 id="1标头格式">（1）标头格式
-</h4><p><img src="https://i-blog.csdnimg.cn/direct/cf8ae99a6b7d4778b8dc2b8dc09f3193.png"
-	
-	
-	
+</h4><p><img src="/p/unity-yaml/img/csdn-cf8ae99a6b7d4778b8dc2b8dc09f3193.png"
+	width="255"
+	height="21"
+	srcset="/p/unity-yaml/img/csdn-cf8ae99a6b7d4778b8dc2b8dc09f3193_hu_3a15dc65e55665c6.png 480w, /p/unity-yaml/img/csdn-cf8ae99a6b7d4778b8dc2b8dc09f3193_hu_ba49a484eb97de04.png 1024w"
 	loading="lazy"
 	
 		alt="对象标头格式"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="1214"
+		data-flex-basis="2914px"
 	
 ></p>
 <p>格式示意：<code>--- !u!&lt;ClassID&gt; &amp;&lt;FILE ID&gt;</code></p>
@@ -513,37 +521,49 @@
 </div>
 </div><h4 id="2标头下方">（2）标头下方
 </h4><p><strong>对象类型名称 + 全量序列化属性</strong>（字段名以 <code>m_</code> 开头居多）。</p>
-<p><img src="https://i-blog.csdnimg.cn/direct/ba539039311c43b69b81855cc23de624.png"
-	
-	
-	
+<p><img src="/p/unity-yaml/img/csdn-ba539039311c43b69b81855cc23de624.png"
+	width="356"
+	height="341"
+	srcset="/p/unity-yaml/img/csdn-ba539039311c43b69b81855cc23de624_hu_45b98dfc6f79c9e5.png 480w, /p/unity-yaml/img/csdn-ba539039311c43b69b81855cc23de624_hu_98a95fcae548d718.png 1024w"
 	loading="lazy"
 	
 		alt="GameObject 序列化示例"
 	
 	
+		class="gallery-image" 
+		data-flex-grow="104"
+		data-flex-basis="250px"
+	
 ></p>
 <hr>
 <h2 id="2-同一-yaml-文件内引用">2. 同一 YAML 文件内引用
 </h2><p>通过 <code>{fileID: &lt;FILE ID&gt;}</code> 格式实现。</p>
-<p><img src="https://i-blog.csdnimg.cn/direct/d6463b211cba467c8afef6af1c01761b.png"
-	
-	
-	
+<p><img src="/p/unity-yaml/img/csdn-d6463b211cba467c8afef6af1c01761b.png"
+	width="351"
+	height="359"
+	srcset="/p/unity-yaml/img/csdn-d6463b211cba467c8afef6af1c01761b_hu_d0ab6ab207cb3559.png 480w, /p/unity-yaml/img/csdn-d6463b211cba467c8afef6af1c01761b_hu_370257890ae03b92.png 1024w"
 	loading="lazy"
 	
 		alt="同文件引用示例 1"
 	
 	
+		class="gallery-image" 
+		data-flex-grow="97"
+		data-flex-basis="234px"
+	
 >
-<img src="https://i-blog.csdnimg.cn/direct/ec442480bc6e44a3819f6747082baf71.png"
-	
-	
-	
+<img src="/p/unity-yaml/img/csdn-ec442480bc6e44a3819f6747082baf71.png"
+	width="368"
+	height="303"
+	srcset="/p/unity-yaml/img/csdn-ec442480bc6e44a3819f6747082baf71_hu_abb76227e42072c9.png 480w, /p/unity-yaml/img/csdn-ec442480bc6e44a3819f6747082baf71_hu_b79db0d7297b25cd.png 1024w"
 	loading="lazy"
 	
 		alt="同文件引用示例 2"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="121"
+		data-flex-basis="291px"
 	
 ></p>
 <p>示例：</p>
@@ -565,14 +585,18 @@
 <h3 id="32-meta-文件">3.2 <code>.meta</code> 文件
 </h3><p>存储 <strong>GUID</strong>、资产导入设置、Asset Bundle 配置等核心元数据。</p>
 <h3 id="33-yaml-中的-type-字段">3.3 YAML 中的 <code>type</code> 字段
-</h3><p><img src="https://i-blog.csdnimg.cn/direct/9b413ca92bb241609208ec260c25a6ad.png"
-	
-	
-	
+</h3><p><img src="/p/unity-yaml/img/csdn-9b413ca92bb241609208ec260c25a6ad.png"
+	width="555"
+	height="43"
+	srcset="/p/unity-yaml/img/csdn-9b413ca92bb241609208ec260c25a6ad_hu_f49455397edb119d.png 480w, /p/unity-yaml/img/csdn-9b413ca92bb241609208ec260c25a6ad_hu_fb516d4849c82a38.png 1024w"
 	loading="lazy"
 	
 		alt="type 字段示例"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="1290"
+		data-flex-basis="3097px"
 	
 ></p>
 <p>跨文件引用常见写法：</p>
@@ -777,7 +801,7 @@
 
 
         <span>
-            最后更新于 May 20, 2026 15:28 &#43;0800
+            最后更新于 May 20, 2026 15:34 &#43;0800
         </span>
     </section></footer>
 
